@@ -3,6 +3,7 @@
 module RailsGraph
   class Configuration
     attr_reader :include_classes
+    attr_writer :columns, :inheritance
 
     def initialize
       @include_classes = []
@@ -17,8 +18,6 @@ module RailsGraph
     def columns?
       @columns
     end
-
-    attr_writer :columns, :inheritance
 
     def inheritance?
       @inheritance

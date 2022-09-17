@@ -1,32 +1,54 @@
 # frozen_string_literal: true
 
+require_relative "../graph/graph"
+require_relative "../graph/node"
+require_relative "../graph/relationship"
+
+require_relative "../graph/nodes/abstract_model"
+require_relative "../graph/nodes/column"
+require_relative "../graph/nodes/model"
+require_relative "../graph/nodes/virtual_model"
+
+require_relative "../graph/relationships/association"
+require_relative "../graph/relationships/attribute"
+require_relative "../graph/relationships/inheritance"
+
+require_relative "../helpers/associations"
+require_relative "../helpers/models"
+
 module RailsGraph
   module Commands
     class BuildGraph
-      def self.call
-        classes = ActiveRecord::Base.descendants + RailsGraph.configuration.include_classes
-
-        build_graph(classes)
+      def self.call(configuration:)
+        new(configuration: configuration).call
       end
 
-      def self.build_graph(classes)
-        graph = RailsGraph::Graph::Graph.new
-
+      def call
         polymorphic_node = RailsGraph::Graph::Nodes::VirtualModel.new("PolymorphicModel")
         graph.add_node(polymorphic_node)
 
         active_record_base_node = RailsGraph::Graph::Nodes::AbstractModel.new(ActiveRecord::Base)
         graph.add_node(active_record_base_node)
 
-        build_model_nodes(classes, graph)
-        build_associations_relationships(classes, graph)
-        build_column_nodes(classes, graph) if RailsGraph.configuration.columns?
-        build_inheritance_relationships(classes, graph) if RailsGraph.configuration.inheritance?
+        build_model_nodes
+        build_associations_relationships
+        build_column_nodes if configuration.columns?
+        build_inheritance_relationships if configuration.inheritance?
 
         graph
       end
 
-      def self.build_model_nodes(classes, graph)
+      private
+
+      attr_reader :configuration, :classes, :graph
+
+      def initialize(configuration:)
+        @configuration = configuration
+        @classes = ActiveRecord::Base.descendants + configuration.include_classes
+        @graph = RailsGraph::Graph::Graph.new
+      end
+
+      def build_model_nodes
         classes.each do |model|
           if model.abstract_class
             node = RailsGraph::Graph::Nodes::AbstractModel.new(model)
@@ -39,7 +61,7 @@ module RailsGraph
         end
       end
 
-      def self.build_column_nodes(classes, graph)
+      def build_column_nodes
         processed = Hash.new(false)
 
         classes.each do |model|
@@ -62,7 +84,7 @@ module RailsGraph
         end
       end
 
-      def self.build_inheritance_relationships(classes, graph)
+      def build_inheritance_relationships
         classes.each do |model|
           identifier = RailsGraph::Helpers::Models.identifier(model)
           node = graph.node(identifier)
@@ -75,7 +97,7 @@ module RailsGraph
         end
       end
 
-      def self.build_associations_relationships(classes, graph)
+      def build_associations_relationships
         classes.each do |model|
           model.reflect_on_all_associations.each do |association|
             source_node = RailsGraph::Helpers::Associations.source_node(graph, association)
