@@ -3,7 +3,7 @@ PATH
   specs:
     rails_graph (0.1.0)
       activerecord (>= 6.0, < 7.1)
-      neo4j-ruby-driver (>= 4.4.0.alpha.7)
+      neo4j-ruby-driver (>= 4.4.0.alpha.8)
       railties (>= 6.0, < 7.1)
 
 GEM
@@ -57,13 +57,19 @@ GEM
       crass (~> 1.0.2)
       nokogiri (>= 1.5.9)
     method_source (1.0.0)
+    mini_portile2 (2.8.0)
     minitest (5.16.3)
     neo4j-ruby-driver (4.4.0.alpha.8)
       activesupport
       async-io
       async-pool
       zeitwerk (>= 2.1.10)
+    nokogiri (1.13.8)
+      mini_portile2 (~> 2.8.0)
+      racc (~> 1.4)
     nokogiri (1.13.8-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.13.8-x86_64-linux)
       racc (~> 1.4)
     parallel (1.22.1)
     parser (3.1.2.1)
@@ -94,13 +100,13 @@ GEM
       rspec-mocks (~> 3.11.0)
     rspec-core (3.11.0)
       rspec-support (~> 3.11.0)
-    rspec-expectations (3.11.0)
+    rspec-expectations (3.11.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.11.0)
     rspec-mocks (3.11.1)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.11.0)
-    rspec-support (3.11.0)
+    rspec-support (3.11.1)
     rubocop (1.36.0)
       json (~> 2.3)
       parallel (~> 1.10)
@@ -118,11 +124,13 @@ GEM
     timers (4.3.4)
     tzinfo (2.0.5)
       concurrent-ruby (~> 1.0)
-    unicode-display_width (2.2.0)
+    unicode-display_width (2.3.0)
     zeitwerk (2.6.0)
 
 PLATFORMS
   arm64-darwin-21
+  ruby
+  x86_64-linux
 
 DEPENDENCIES
   rails_graph!

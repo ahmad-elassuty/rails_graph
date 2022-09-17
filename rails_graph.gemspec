@@ -11,7 +11,7 @@ Gem::Specification.new do |spec|
   spec.summary = "Graph visualization for Rails applications."
   spec.homepage = "https://github.com/ahmad-elassuty/rails_graph"
   spec.license = "MIT"
-  spec.required_ruby_version = ">= 2.6.0"
+  spec.required_ruby_version = ">= 3.0"
 
   spec.metadata["rubygems_mfa_required"] = "true"
   spec.metadata["homepage_uri"] = spec.homepage
@@ -31,6 +31,6 @@ Gem::Specification.new do |spec|
 
   # Dependencies
   spec.add_dependency "activerecord", ">= 6.0", "< 7.1"
-  spec.add_dependency "neo4j-ruby-driver", ">= 4.4.0.alpha.7"
+  spec.add_dependency "neo4j-ruby-driver", ">= 4.4.0.alpha.8"
   spec.add_dependency "railties", ">= 6.0", "< 7.1"
 end
