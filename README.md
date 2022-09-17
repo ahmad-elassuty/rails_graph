@@ -1,8 +1,25 @@
 # RailsGraph
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/rails_graph`. To experiment with that code, run `bin/console` for an interactive prompt.
+Graph visualization for Rails applications using [Neo4j Browser](https://neo4j.com/docs/browser-manual/current/). 
 
-TODO: Delete this and the text above, and describe your gem
+Gain visibility on your Rails application data model and identify bottlenecks. It is an ERD, but interactive and queryable using [Cypher](https://neo4j.com/developer/cypher/).
+
+![Graph](graph.svg "Graph")
+
+## Features
+
+- ActiveRecord Models
+    - Metadata, e.g size, indexes
+    - Columns (disabled by default)
+        - Metadata, e.g type and constraints
+    - Associations
+        - HasMany
+        - BelongsTo
+        - HasOne
+        - HasAndBelongsToMany
+        - Support for Polymorphic Associations
+- ActiveRecord Abstract models
+- Class Hierarchy
 
 ## Installation
 
@@ -10,13 +27,48 @@ Install the gem and add to the application's Gemfile by executing:
 
     $ bundle add rails_graph
 
-If bundler is not being used to manage dependencies, install the gem by executing:
-
-    $ gem install rails_graph
-
 ## Usage
 
-TODO: Write usage instructions here
+After installing RailsGraph to your Rails application, run the following rake task to scan your app and export it to Neo4j:
+
+```
+rails rails_graph:export:neo4j -- -u neo4j -p admin -h neo4j://localhost:7687
+```
+
+Then explore your model on Neo4j Browser.
+
+### Neo4j
+
+To learn how to use Neo4j Browser, check out the [documentation](https://neo4j.com/docs/browser-manual/current/visual-tour/).
+
+#### Self setup
+If you have Neo4j running locally, e.g using Docker, then the browser is most likely accessible through: http://localhost:7474/browser/
+
+#### Cloud Options
+If you prefer to have a cloud managed server, feel free to check out [Neo4j AuraDB](https://neo4j.com/cloud/platform/aura-graph-database/), it provides a free instance.
+
+## Config
+
+You can control what RailsGraph will include in the final graph by:
+
+```ruby
+# config/initializers/rails_graph.rb
+
+RailsGraph.configure do |config|
+  # Configure extra classes that are not loaded automatically
+  config.include_classes = [ActsAsTaggableOn::Tag, ActsAsTaggableOn::Tagging]
+
+  # Configure Columns parsing
+  config.columns = true
+
+  # Configure Class Hierarchy parsing
+  config.inheritance = true
+end
+```
+
+### Sample Project
+
+Checkout RailsGraph Example repo [here](https://github.com/ahmad-elassuty/rails_graph_example)
 
 ## Development
 
@@ -26,7 +78,7 @@ To install this gem onto your local machine, run `bundle exec rake install`. To 
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/rails_graph. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/[USERNAME]/rails_graph/blob/master/CODE_OF_CONDUCT.md).
+Bug reports and pull requests are welcome on GitHub at https://github.com/ahmad-elassuty/rails_graph. This project is intended to be a safe, welcoming space for collaboration, and contributors are expected to adhere to the [code of conduct](https://github.com/ahmad-elassuty/rails_graph/blob/master/CODE_OF_CONDUCT.md).
 
 ## License
 
@@ -34,4 +86,4 @@ The gem is available as open source under the terms of the [MIT License](https:/
 
 ## Code of Conduct
 
-Everyone interacting in the RailsGraph project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/[USERNAME]/rails_graph/blob/master/CODE_OF_CONDUCT.md).
+Everyone interacting in the RailsGraph project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/ahmad-elassuty/rails_graph/blob/master/CODE_OF_CONDUCT.md).
