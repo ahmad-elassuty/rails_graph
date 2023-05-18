@@ -7,11 +7,13 @@ require_relative "../graph/relationship"
 require_relative "../graph/nodes/abstract_model"
 require_relative "../graph/nodes/column"
 require_relative "../graph/nodes/model"
+require_relative "../graph/nodes/pack"
 require_relative "../graph/nodes/virtual_model"
 
 require_relative "../graph/relationships/association"
 require_relative "../graph/relationships/attribute"
 require_relative "../graph/relationships/inheritance"
+require_relative "../graph/relationships/pack_dependency"
 
 require_relative "../helpers/associations"
 require_relative "../helpers/models"
@@ -30,6 +32,8 @@ module RailsGraph
         active_record_base_node = RailsGraph::Graph::Nodes::AbstractModel.new(ActiveRecord::Base)
         graph.add_node(active_record_base_node)
 
+        build_pack_nodes
+        build_pack_dependencies
         build_model_nodes
         build_associations_relationships
         build_column_nodes if configuration.columns?
@@ -104,6 +108,40 @@ module RailsGraph
             target_node = RailsGraph::Helpers::Associations.target_node(graph, association)
 
             relationship = RailsGraph::Graph::Relationships::Association.new(association, source_node, target_node)
+            graph.add_relationship(relationship)
+          end
+        end
+      end
+
+      def build_pack_nodes
+        Packwerk::PackageSet.load_all_from('packs').map do |pack|
+          next if pack.name == "."
+
+          name, owner = fetch_pack_attributes(pack)
+          node = RailsGraph::Graph::Nodes::Pack.new(name, owner)
+          graph.add_node(node)
+        end
+      end
+
+      def fetch_pack_attributes(pack)
+        [
+          pack.name,
+          pack.config["metadata"]["owner"] || pack.config["metadata"]["stewards"]
+        ]
+      end
+
+      def build_pack_dependencies
+        Packwerk::PackageSet.load_all_from('packs').map do |pack|
+          next if pack.name == "."
+
+          source_identifier = pack.name
+          source_node = graph.node(source_identifier)
+
+          pack.dependencies.each do |dep|
+            target_identifier = dep.gsub('packs/', '')
+            target_node = graph.node(target_identifier)
+
+            relationship = RailsGraph::Graph::Relationships::PackDependency.new(source_node, target_node)
             graph.add_relationship(relationship)
           end
         end
