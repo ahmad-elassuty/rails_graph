@@ -14,6 +14,7 @@ require_relative "../graph/relationships/association"
 require_relative "../graph/relationships/attribute"
 require_relative "../graph/relationships/inheritance"
 require_relative "../graph/relationships/pack_dependency"
+require_relative "../graph/relationships/pack_model"
 
 require_relative "../helpers/associations"
 require_relative "../helpers/models"
@@ -38,6 +39,7 @@ module RailsGraph
         build_associations_relationships
         build_column_nodes if configuration.columns?
         build_inheritance_relationships if configuration.inheritance?
+        build_pack_model_relationships
 
         graph
       end
@@ -143,6 +145,32 @@ module RailsGraph
 
             relationship = RailsGraph::Graph::Relationships::PackDependency.new(source_node, target_node)
             graph.add_relationship(relationship)
+          end
+        end
+      end
+
+      def build_pack_model_relationships
+        Packwerk::PackageSet.load_all_from('packs').map do |pack|
+          next if pack.name == "." || pack.name == 'goals'
+
+          generic_path = "packs/#{pack.name}/app/models"
+          model_classes = Dir["#{generic_path}/**/*.rb"].map do |path|
+            path
+              .gsub("#{generic_path}", "")
+              .gsub(".rb", "")
+              .prepend("#{pack.name}")
+          end.map(&:camelize).map(&:constantize)
+
+          model_classes.each do |model|
+            if model.respond_to?(:descends_from_active_record?)
+              source_identifier = RailsGraph::Helpers::Models.identifier(model)
+              source_node = graph.node(source_identifier)
+              target_identifier = pack.name
+              target_node = graph.node(target_identifier)
+
+              relationship = RailsGraph::Graph::Relationships::PackModel.new(source_node, target_node)
+              graph.add_relationship(relationship)
+            end
           end
         end
       end
