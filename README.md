@@ -20,6 +20,7 @@ Gain visibility on your Rails application data model and identify bottlenecks. I
         - Support for Polymorphic Associations
 - ActiveRecord Abstract models
 - Class Hierarchy
+- [Packwerk](https://github.com/Shopify/packwerk) packages (disabled by default)
 
 ## Installation
 
@@ -59,10 +60,15 @@ RailsGraph.configure do |config|
   config.include_classes = [ActsAsTaggableOn::Tag, ActsAsTaggableOn::Tagging]
 
   # Configure Columns parsing
+  # default false
   config.columns = true
 
   # Configure Class Hierarchy parsing
   config.inheritance = true
+
+  # Configure inclusion of Packwerk packages
+  # default false
+  config.include_packwerk = true
 end
 ```
 
