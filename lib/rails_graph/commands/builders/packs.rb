@@ -1,7 +1,8 @@
 # frozen_string_literal: true
+
 module RailsGraph
   module Commands
-    module Helpers
+    module Builders
       class Packs
         def self.enrich(graph:)
           new(graph: graph).enrich
@@ -37,7 +38,7 @@ module RailsGraph
             source_node = graph.node(source_identifier)
 
             pack.dependencies.each do |dep|
-              target_identifier = dep.gsub('packs/', '')
+              target_identifier = dep.gsub("packs/", "")
               target_node = graph.node(target_identifier)
 
               relationship = RailsGraph::Graph::Relationships::PackDependency.new(source_node, target_node)
@@ -48,7 +49,7 @@ module RailsGraph
 
         def build_pack_model_relationships
           packs.each do |pack|
-            next if pack.name == 'goals'
+            next if pack.name == "goals"
 
             models = fetch_pack_models(pack: pack)
             models.each do |model|
@@ -59,10 +60,9 @@ module RailsGraph
 
         def packs
           @packs ||=
-            Packwerk::PackageSet.load_all_from('packs').map do |pack|
-              next if pack.name == "."
-              pack
-            end.compact
+            Packwerk::PackageSet.load_all_from("packs").reject do |pack|
+              pack.name == "."
+            end
         end
 
         def fetch_pack_attributes(pack)
@@ -74,11 +74,11 @@ module RailsGraph
 
         def fetch_pack_models(pack:)
           generic_path = "packs/#{pack.name}/app/models"
-          model_classes = Dir["#{generic_path}/**/*.rb"].map do |path|
+          Dir["#{generic_path}/**/*.rb"].map do |path|
             path
-              .gsub("#{generic_path}", "")
+              .gsub(generic_path, "")
               .gsub(".rb", "")
-              .prepend("#{pack.name}")
+              .prepend(pack.name)
               .camelize
               .constantize
           end

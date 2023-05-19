@@ -24,7 +24,7 @@ module RailsGraph
         def build_properties
           {
             name: pack_name,
-            owner: pack_owner,
+            owner: pack_owner
           }
         end
       end
