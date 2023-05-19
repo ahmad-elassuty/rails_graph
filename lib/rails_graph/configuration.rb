@@ -3,10 +3,12 @@
 module RailsGraph
   class Configuration
     attr_reader :include_classes
+    attr_reader :include_packwerk
     attr_writer :columns, :inheritance
 
     def initialize
       @include_classes = []
+      @include_packwerk = false
       @columns = false
       @inheritance = true
     end
@@ -15,12 +17,20 @@ module RailsGraph
       @include_classes = Array(include_classes)
     end
 
+    def include_packwerk=(include_packwerk)
+      @include_packwerk = include_packwerk
+    end
+
     def columns?
       @columns
     end
 
     def inheritance?
       @inheritance
+    end
+
+    def include_packwerk?
+      @include_packwerk
     end
   end
 end
