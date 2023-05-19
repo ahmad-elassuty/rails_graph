@@ -8,6 +8,7 @@ Gain visibility on your Rails application data model and identify bottlenecks. I
 
 ## Features
 
+- Application Databases and Tables
 - ActiveRecord Models
     - Metadata, e.g size, indexes
     - Columns (disabled by default)
@@ -65,6 +66,10 @@ RailsGraph.configure do |config|
 
   # Configure Class Hierarchy parsing
   config.inheritance = true
+
+  # Configure Database entities
+  # default true
+  config.database = false
 
   # Configure inclusion of Packwerk packages
   # default false
