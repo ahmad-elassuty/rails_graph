@@ -15,6 +15,7 @@ module RailsGraph
           build_associations_relationships
           build_column_nodes if configuration.columns?
           build_model_table_relationships if configuration.databases?
+          build_inheritance_relationships if configuration.inheritance?
         end
 
         private
@@ -68,6 +69,19 @@ module RailsGraph
           end
         end
 
+        def build_inheritance_relationships
+          classes.each do |model|
+            identifier = RailsGraph::Helpers::Models.identifier(model)
+            node = graph.node(identifier)
+
+            superclass_node_identifier = RailsGraph::Helpers::Models.identifier(model.superclass)
+            superclass_node = graph.node(superclass_node_identifier)
+
+            relationship = RailsGraph::Graph::Relationships::Inheritance.new(node, superclass_node)
+            graph.add_relationship(relationship)
+          end
+        end
+
         def build_model_table_relationships
           classes.each do |model|
             database_name = model.connection_pool.db_config.name
@@ -77,15 +91,19 @@ module RailsGraph
 
             identifier = RailsGraph::Helpers::Models.identifier(model)
             node = graph.node(identifier)
-            relationship = RailsGraph::Graph::Relationship.new(
-              source: node,
-              target: table_node,
-              label: "RepresentsTable",
-              name: "represents_table",
-              properties: {}
-            )
+            relationship = build_represents_table_relationship(node, table_node)
             graph.add_relationship(relationship)
           end
+        end
+
+        def build_represents_table_relationship(model, table)
+          RailsGraph::Graph::Relationship.new(
+            source: model,
+            target: table,
+            label: "RepresentsTable",
+            name: "represents_table",
+            properties: {}
+          )
         end
 
         def add_column_nodes(model:, node:)

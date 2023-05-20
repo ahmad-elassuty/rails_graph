@@ -2,6 +2,6 @@
 
 module RailsGraph
   module Exporters
-    class Base; end
+    class Base; end # rubocop:disable Lint/EmptyClass
   end
 end

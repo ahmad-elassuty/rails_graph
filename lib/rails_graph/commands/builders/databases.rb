@@ -32,24 +32,28 @@ module RailsGraph
 
         def build_tables_nodes
           ActiveRecord::Base.connection_handler.connection_pools.each do |connection_pool|
-            tables = connection_pool.connection.tables
             database_name = connection_pool.db_config.name
             database_node = graph.node("database_#{database_name}")
 
-            tables.each do |table|
+            connection_pool.connection.tables.each do |table|
               table_node = RailsGraph::Graph::Nodes::Table.new(table, database_name)
               graph.add_node(table_node)
 
-              relationship = RailsGraph::Graph::Relationship.new(
-                source: table_node,
-                target: database_node,
-                label: "PersistedIn",
-                name: "persisted_in",
-                properties: {}
-              )
-              graph.add_relationship(relationship)
+              add_persisted_in_relationship(table_node, database_node)
             end
           end
+        end
+
+        def add_persisted_in_relationship(table_node, database_node)
+          relationship = RailsGraph::Graph::Relationship.new(
+            source: table_node,
+            target: database_node,
+            label: "PersistedIn",
+            name: "persisted_in",
+            properties: {}
+          )
+
+          graph.add_relationship(relationship)
         end
 
         def databases

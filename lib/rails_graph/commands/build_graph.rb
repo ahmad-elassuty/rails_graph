@@ -37,7 +37,6 @@ module RailsGraph
 
         RailsGraph::Commands::Builders::Databases.enrich(graph: graph) if configuration.databases?
         RailsGraph::Commands::Builders::Models.enrich(graph: graph, classes: classes, configuration: configuration)
-        build_inheritance_relationships if configuration.inheritance?
         RailsGraph::Commands::Builders::Packs.enrich(graph: graph) if configuration.include_packwerk?
 
         graph
@@ -59,19 +58,6 @@ module RailsGraph
 
         active_record_base_node = RailsGraph::Graph::Nodes::AbstractModel.new(ActiveRecord::Base)
         graph.add_node(active_record_base_node)
-      end
-
-      def build_inheritance_relationships
-        classes.each do |model|
-          identifier = RailsGraph::Helpers::Models.identifier(model)
-          node = graph.node(identifier)
-
-          superclass_node_identifier = RailsGraph::Helpers::Models.identifier(model.superclass)
-          superclass_node = graph.node(superclass_node_identifier)
-
-          relationship = RailsGraph::Graph::Relationships::Inheritance.new(node, superclass_node)
-          graph.add_relationship(relationship)
-        end
       end
     end
   end
