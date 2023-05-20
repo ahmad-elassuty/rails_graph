@@ -14,6 +14,7 @@ module RailsGraph
           build_model_nodes
           build_associations_relationships
           build_column_nodes if configuration.columns?
+          build_model_table_relationships if configuration.databases?
         end
 
         private
@@ -64,6 +65,26 @@ module RailsGraph
 
             processed[node.id] = true
             add_column_nodes(model: model, node: node)
+          end
+        end
+
+        def build_model_table_relationships
+          classes.each do |model|
+            database_name = model.connection_pool.db_config.name
+            table_node = graph.node("table_#{database_name}.#{model.table_name}")
+
+            next unless table_node
+
+            identifier = RailsGraph::Helpers::Models.identifier(model)
+            node = graph.node(identifier)
+            relationship = RailsGraph::Graph::Relationship.new(
+              source: node,
+              target: table_node,
+              label: "RepresentsTable",
+              name: "represents_table",
+              properties: {}
+            )
+            graph.add_relationship(relationship)
           end
         end
 

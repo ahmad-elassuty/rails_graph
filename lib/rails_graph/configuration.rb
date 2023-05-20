@@ -2,13 +2,13 @@
 
 module RailsGraph
   class Configuration
-    attr_accessor :include_packwerk
     attr_reader :include_classes
-    attr_writer :columns, :inheritance
+    attr_writer :columns, :inheritance, :include_packwerk, :databases
 
     def initialize
       @include_classes = []
       @include_packwerk = false
+      @databases = true
       @columns = false
       @inheritance = true
     end
@@ -27,6 +27,10 @@ module RailsGraph
 
     def include_packwerk?
       @include_packwerk
+    end
+
+    def databases?
+      @databases
     end
   end
 end
