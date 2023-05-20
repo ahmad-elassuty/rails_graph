@@ -17,7 +17,7 @@ module RailsGraph
         def identifier
           "database_#{name}"
         end
-        
+
         private
 
         def build_properties

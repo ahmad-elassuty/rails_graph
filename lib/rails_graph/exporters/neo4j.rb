@@ -11,15 +11,19 @@ module RailsGraph
 
         ::Neo4j::Driver::GraphDatabase.driver(host, auth) do |driver|
           driver.session do |session|
-            queries = Cypher.build_queries(graph)
-            queries.shift
-            queries = queries.join("\n")
+            queries = build_query(graph)
 
             session.write_transaction do |tx|
               tx.run(queries, message: "Success!")
             end
           end
         end
+      end
+
+      def self.build_query(graph)
+        queries = Cypher.build_queries(graph)
+        queries.shift
+        queries.join("\n")
       end
     end
   end
