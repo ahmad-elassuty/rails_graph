@@ -1,5 +1,7 @@
 # RailsGraph
 
+[![Gem Version](https://badge.fury.io/rb/rails_graph.svg)](https://badge.fury.io/rb/rails_graph)
+
 Graph visualization for Rails applications using [Neo4j Browser](https://neo4j.com/docs/browser-manual/current/). 
 
 Gain visibility on your Rails application data model and identify bottlenecks. It is an ERD, but interactive and queryable using [Cypher](https://neo4j.com/developer/cypher/).
