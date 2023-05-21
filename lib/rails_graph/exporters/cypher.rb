@@ -32,7 +32,7 @@ module RailsGraph
 
         item.properties.each do |k, v|
           formatted_value = case v
-                            when String, Symbol then "'#{v}'"
+                            when String, Symbol then "'#{escape_quotes(v)}'"
                             when nil then "null"
                             else v.to_s
                             end
@@ -56,6 +56,12 @@ module RailsGraph
         target_ref = node_ref(relationship.target)
 
         "CREATE (#{source_ref})-[:#{relationship.label} {#{format_properties(relationship)}}]->(#{target_ref})"
+      end
+
+      def self.escape_quotes(value)
+        return value if value.is_a? Symbol
+
+        value.gsub("'") { "\\'" }
       end
     end
   end
