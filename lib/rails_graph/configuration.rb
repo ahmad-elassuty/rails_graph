@@ -3,7 +3,7 @@
 module RailsGraph
   class Configuration
     attr_reader :include_classes
-    attr_writer :columns, :inheritance, :include_packwerk, :databases
+    attr_writer :columns, :inheritance, :include_packwerk, :databases, :gems
 
     def initialize
       @include_classes = []
@@ -11,6 +11,7 @@ module RailsGraph
       @databases = true
       @columns = false
       @inheritance = true
+      @gems = false
     end
 
     def include_classes=(include_classes)
@@ -31,6 +32,10 @@ module RailsGraph
 
     def databases?
       @databases
+    end
+
+    def gems?
+      @gems
     end
   end
 end

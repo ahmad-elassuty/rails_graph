@@ -4,7 +4,9 @@ module RailsGraph
   module Commands
     module Builders
       class Packs
-        def self.enrich(graph:)
+        def self.enrich(graph:, configuration:)
+          return unless configuration.include_packwerk?
+
           new(graph: graph).enrich
 
           graph

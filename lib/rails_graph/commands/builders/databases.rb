@@ -4,7 +4,9 @@ module RailsGraph
   module Commands
     module Builders
       class Databases
-        def self.enrich(graph:)
+        def self.enrich(graph:, configuration:)
+          return unless configuration.databases?
+
           new(graph: graph).enrich
 
           graph
