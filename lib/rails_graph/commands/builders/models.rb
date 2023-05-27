@@ -12,7 +12,7 @@ module RailsGraph
 
         def enrich
           build_model_nodes
-          build_associations_relationships
+          build_associations
           build_column_nodes if configuration.columns?
           build_model_table_relationships if configuration.databases?
           build_inheritance_relationships if configuration.inheritance?
@@ -45,26 +45,8 @@ module RailsGraph
           end
         end
 
-        def build_associations_relationships
-          classes.each do |model|
-            model.reflect_on_all_associations.each do |association|
-              association.check_validity!
-
-              source_node = RailsGraph::Helpers::Associations.source_node(graph, association)
-              target_node = RailsGraph::Helpers::Associations.target_node(graph, association)
-
-              if source_node.nil? || target_node.nil?
-                report_invalid_class(model)
-                next
-              end
-
-              relationship = RailsGraph::Graph::Relationships::Association.new(association, source_node, target_node)
-              graph.add_relationship(relationship)
-
-            rescue ActiveRecord::ActiveRecordError => _e
-              report_invalid_association(association)
-            end
-          end
+        def build_associations
+          Builders::Associations.enrich(inspector: inspector, graph: graph, classes: classes)
         end
 
         def build_column_nodes
@@ -129,14 +111,6 @@ module RailsGraph
             relationship = RailsGraph::Graph::Relationships::Attribute.new(node, column_node)
             graph.add_relationship(relationship)
           end
-        end
-
-        def report_invalid_association(association)
-          inspector.add_association(association)
-        end
-
-        def report_invalid_class(klass)
-          inspector.add_class(klass)
         end
       end
     end

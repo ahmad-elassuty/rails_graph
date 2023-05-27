@@ -21,6 +21,7 @@ require_relative "../graph/relationships/pack_model"
 require_relative "../helpers/associations"
 require_relative "../helpers/models"
 
+require_relative "./builders/associations"
 require_relative "./builders/models"
 require_relative "./builders/packs"
 require_relative "./builders/databases"
