@@ -36,7 +36,8 @@ module RailsGraph
         setup_generic_nodes
 
         RailsGraph::Commands::Builders::Databases.enrich(graph: graph) if configuration.databases?
-        RailsGraph::Commands::Builders::Models.enrich(graph: graph, classes: classes, configuration: configuration)
+        RailsGraph::Commands::Builders::Models.enrich(inspector: inspector, graph: graph, classes: classes,
+                                                      configuration: configuration)
         RailsGraph::Commands::Builders::Packs.enrich(graph: graph) if configuration.include_packwerk?
 
         graph
@@ -44,12 +45,13 @@ module RailsGraph
 
       private
 
-      attr_reader :configuration, :classes, :graph
+      attr_reader :configuration, :classes, :graph, :inspector
 
       def initialize(configuration:)
         @configuration = configuration
         @classes = ActiveRecord::Base.descendants + configuration.include_classes
         @graph = RailsGraph::Graph::Graph.new
+        @inspector = RailsGraph::Inspector.new
       end
 
       def setup_generic_nodes

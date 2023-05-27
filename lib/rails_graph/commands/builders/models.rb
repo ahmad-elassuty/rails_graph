@@ -4,10 +4,10 @@ module RailsGraph
   module Commands
     module Builders
       class Models
-        def self.enrich(graph:, classes:, configuration:)
-          new(graph: graph, classes: classes, configuration: configuration).enrich
+        attr_reader :graph, :inspector
 
-          graph
+        def self.enrich(...)
+          new(...).enrich
         end
 
         def enrich
@@ -16,13 +16,17 @@ module RailsGraph
           build_column_nodes if configuration.columns?
           build_model_table_relationships if configuration.databases?
           build_inheritance_relationships if configuration.inheritance?
+
+          inspector.log
+          graph
         end
 
         private
 
-        attr_reader :graph, :classes, :configuration
+        attr_reader :classes, :configuration
 
-        def initialize(graph:, classes:, configuration:)
+        def initialize(inspector:, graph:, classes:, configuration:)
+          @inspector = inspector
           @graph = graph
           @configuration = configuration
           @classes = classes
@@ -44,11 +48,21 @@ module RailsGraph
         def build_associations_relationships
           classes.each do |model|
             model.reflect_on_all_associations.each do |association|
+              association.check_validity!
+
               source_node = RailsGraph::Helpers::Associations.source_node(graph, association)
               target_node = RailsGraph::Helpers::Associations.target_node(graph, association)
 
+              if source_node.nil? || target_node.nil?
+                report_invalid_class(model)
+                next
+              end
+
               relationship = RailsGraph::Graph::Relationships::Association.new(association, source_node, target_node)
               graph.add_relationship(relationship)
+
+            rescue ActiveRecord::ActiveRecordError => _e
+              report_invalid_association(association)
             end
           end
         end
@@ -91,6 +105,7 @@ module RailsGraph
 
             identifier = RailsGraph::Helpers::Models.identifier(model)
             node = graph.node(identifier)
+
             relationship = build_represents_table_relationship(node, table_node)
             graph.add_relationship(relationship)
           end
@@ -114,6 +129,14 @@ module RailsGraph
             relationship = RailsGraph::Graph::Relationships::Attribute.new(node, column_node)
             graph.add_relationship(relationship)
           end
+        end
+
+        def report_invalid_association(association)
+          inspector.add_association(association)
+        end
+
+        def report_invalid_class(klass)
+          inspector.add_class(klass)
         end
       end
     end
