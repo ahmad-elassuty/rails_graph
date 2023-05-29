@@ -7,6 +7,7 @@ require "rails_graph/railtie"
 
 require "rails_graph/commands/build_graph"
 require "rails_graph/commands/export_graph"
+require "rails_graph/inspector"
 
 module RailsGraph
   module_function

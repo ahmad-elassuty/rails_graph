@@ -4,25 +4,29 @@ module RailsGraph
   module Commands
     module Builders
       class Models
-        def self.enrich(graph:, classes:, configuration:)
-          new(graph: graph, classes: classes, configuration: configuration).enrich
+        attr_reader :graph, :inspector
 
-          graph
+        def self.enrich(...)
+          new(...).enrich
         end
 
         def enrich
           build_model_nodes
-          build_associations_relationships
+          build_associations
           build_column_nodes if configuration.columns?
           build_model_table_relationships if configuration.databases?
           build_inheritance_relationships if configuration.inheritance?
+
+          inspector.log
+          graph
         end
 
         private
 
-        attr_reader :graph, :classes, :configuration
+        attr_reader :classes, :configuration
 
-        def initialize(graph:, classes:, configuration:)
+        def initialize(inspector:, graph:, classes:, configuration:)
+          @inspector = inspector
           @graph = graph
           @configuration = configuration
           @classes = classes
@@ -41,16 +45,8 @@ module RailsGraph
           end
         end
 
-        def build_associations_relationships
-          classes.each do |model|
-            model.reflect_on_all_associations.each do |association|
-              source_node = RailsGraph::Helpers::Associations.source_node(graph, association)
-              target_node = RailsGraph::Helpers::Associations.target_node(graph, association)
-
-              relationship = RailsGraph::Graph::Relationships::Association.new(association, source_node, target_node)
-              graph.add_relationship(relationship)
-            end
-          end
+        def build_associations
+          Builders::Associations.enrich(inspector: inspector, graph: graph, classes: classes)
         end
 
         def build_column_nodes
@@ -91,6 +87,7 @@ module RailsGraph
 
             identifier = RailsGraph::Helpers::Models.identifier(model)
             node = graph.node(identifier)
+
             relationship = build_represents_table_relationship(node, table_node)
             graph.add_relationship(relationship)
           end
