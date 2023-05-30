@@ -8,6 +8,8 @@ Gain visibility on your Rails application data model and identify bottlenecks. I
 
 ![Graph](graph.svg "Graph")
 
+https://github.com/ahmad-elassuty/rails_graph/assets/4674035/53deb04e-f995-4af6-9496-a873f84b5445
+
 ## Features
 
 - Application Databases and Tables
