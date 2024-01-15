@@ -7,6 +7,7 @@ require_relative "../graph/relationship"
 require_relative "../graph/nodes/abstract_model"
 require_relative "../graph/nodes/column"
 require_relative "../graph/nodes/database"
+require_relative "../graph/nodes/gem"
 require_relative "../graph/nodes/model"
 require_relative "../graph/nodes/pack"
 require_relative "../graph/nodes/table"
@@ -25,6 +26,7 @@ require_relative "./builders/associations"
 require_relative "./builders/models"
 require_relative "./builders/packs"
 require_relative "./builders/databases"
+require_relative "./builders/gems_builder"
 
 module RailsGraph
   module Commands
@@ -36,6 +38,7 @@ module RailsGraph
       def call
         setup_generic_nodes
 
+        RailsGraph::Commands::Builders::GemsBuilder.enrich(graph: graph)
         RailsGraph::Commands::Builders::Databases.enrich(graph: graph) if configuration.databases?
         RailsGraph::Commands::Builders::Models.enrich(inspector: inspector, graph: graph, classes: classes,
                                                       configuration: configuration)
