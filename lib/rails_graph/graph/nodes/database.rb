@@ -28,8 +28,8 @@ module RailsGraph
             replica: configs.replica? || false,
             database_name: configs.database,
             reaping_frequency: configs.reaping_frequency,
-            min_threads: configs.min_threads,
-            max_threads: configs.max_threads
+            min_threads: configs.try(:min_threads),
+            max_threads: configs.try(:max_threads)
           }
         end
       end

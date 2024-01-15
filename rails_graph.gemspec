@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   # Dependencies
-  spec.add_dependency "activerecord", ">= 6.0", "< 7.1"
-  spec.add_dependency "neo4j-ruby-driver", ">= 4.4.0.alpha.8"
-  spec.add_dependency "railties", ">= 6.0", "< 7.1"
+  spec.add_dependency "activerecord", ">= 6.0"
+  spec.add_dependency "neo4j-ruby-driver", ">= 4.4"
+  spec.add_dependency "railties", ">= 6.0"
 end
