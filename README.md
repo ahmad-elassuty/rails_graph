@@ -26,6 +26,7 @@ https://github.com/ahmad-elassuty/rails_graph/assets/4674035/53deb04e-f995-4af6-
 - ActiveRecord Abstract models
 - Class Hierarchy
 - [Packwerk](https://github.com/Shopify/packwerk) packages (disabled by default)
+- Application Gems (disabled by default)
 
 ## Installation
 
@@ -61,23 +62,28 @@ You can control what RailsGraph will include in the final graph by:
 # config/initializers/rails_graph.rb
 
 RailsGraph.configure do |config|
-  # Configure extra classes that are not loaded automatically
+  # Explicitly define classes that are not loaded automatically
   config.include_classes = [ActsAsTaggableOn::Tag, ActsAsTaggableOn::Tagging]
 
-  # Configure Columns parsing
+  # Enable Columns visualisation
   # default false
   config.columns = true
 
-  # Configure Class Hierarchy parsing
+  # Enable Class Hierarchy visualisation
+  # default true
   config.inheritance = true
 
-  # Configure Database entities
+  # Enable Databases visualisation
   # default true
-  config.database = false
+  config.databases = false
 
-  # Configure inclusion of Packwerk packages
+  # Enable Packwerk packages visualisation
   # default false
   config.include_packwerk = true
+
+  # Enable Gems visualisation
+  # default false
+  config.gems = true
 end
 ```
 
