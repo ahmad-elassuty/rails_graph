@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    rails_graph (0.3.0)
+    rails_graph (0.4.0)
       activerecord (>= 6.0)
       neo4j-ruby-driver (>= 4.4)
       railties (>= 6.0)
@@ -63,6 +63,8 @@ GEM
       connection_pool
       zeitwerk (>= 2.1.10)
     nokogiri (1.15.2-arm64-darwin)
+      racc (~> 1.4)
+    nokogiri (1.15.2-x86_64-linux)
       racc (~> 1.4)
     parallel (1.23.0)
     parser (3.2.2.1)
